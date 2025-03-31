@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Iinclude -g -Wall -Wextra -Werror -pedantic -std=c2x
+CFLAGS = -Iinclude -g -Wall -Wextra -pedantic -std=c2x
 
 SRC_DIR = src
 OBJ_DIR = obj
@@ -8,7 +8,7 @@ BIN_DIR = bin
 SRC = $(wildcard $(SRC_DIR)/*.c)
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
-TARGET = resolve
+TARGET = bin/resolve
 
 all: $(TARGET)
 

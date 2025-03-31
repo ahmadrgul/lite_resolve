@@ -1,7 +1,11 @@
-#include"dns_utils.h"
-#include"dns_request.h"
-#include"dns_response.h"
-#include<errno.h>
+#include <errno.h>
+#include <string.h>
+#include <stdio.h>
+#include <time.h>
+#include "utils.h"
+#include "query.h"
+#include "response.h"
+#include "packet.h"
 
 int main(int argc, char *argv[]){
     if (argc < 2 || argc > 3) {
@@ -9,7 +13,7 @@ int main(int argc, char *argv[]){
         exit(EXIT_FAILURE);
     }
 
-    UserQuery user_query = parseUserQuery(argc, argv);
+    UserQuery user_query = parse_user_query(argc, argv);
     if (user_query.type == UNKNOWN) {
         fprintf(stderr, "Unknown type: %s", argv[1]);
         exit(EXIT_FAILURE);
@@ -22,28 +26,28 @@ int main(int argc, char *argv[]){
     }
     
     srand(time(NULL));
-    uint8_t *request = calloc(1, 512);
 
-    uint16_t id = rand() % 65535;
-    int req_len = build_dns_query(user_query.query, user_query.type, request, 512, id);
-    send_dns_query(sockfd, DNS_SERVER, request, req_len);
+    struct sockaddr_in server_addr;
+    server_addr.sin_addr.s_addr = inet_addr(DNS_SERVER);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(53);
 
-    uint8_t *response = calloc(1, 512);
-    int resposne_len = recv_dns_response(sockfd, DNS_SERVER, response, 512);
-    DNSAnswerSet *answers = parse_dns_response(response, resposne_len, id);
+    DnsPacket query_packet = build_query(user_query);
+    send_packet(sockfd, query_packet, server_addr);
+    
+    uint8_t buffer[512];
+    recv_packet(sockfd, buffer, server_addr);
+    DnsPacket response_packet = parse_packet(buffer);
+    response_packet = ntoh_packet(response_packet);
 
-
-    for (int type = TYPES_COUNT-1; type >= 0; type--) {
-        int i = 0;
-        if (answers->count[type]-1 >= 0) printf("Resolved:\n");
-
-        while (i < answers->count[type]) {
-            printf("%s\n", answers->answers[type][i]);
-            i++;
-        }
+    UserResponse *user_responses = build_user_responses(response_packet.answers, response_packet.header.an_count);
+    
+    for (int i = 0; i < response_packet.header.an_count; i++) {
+        printf("--> %s\n", user_responses[i].answer);
     }
     
-    free_ans_set(answers);
-
+    free_user_responses(user_responses, response_packet.header.an_count);
+    free_packet(response_packet);
+    free_packet(query_packet);
     return 0;
 }
