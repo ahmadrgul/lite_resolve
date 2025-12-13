@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "dns_utils.h": "c",
-        "question.h": "c",
-        "resource_record.h": "c",
-        "utils.h": "c",
-        "compare": "cpp"
-    }
-}
