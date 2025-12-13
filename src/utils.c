@@ -165,6 +165,8 @@ char* parse_rdata(const uint8_t *data, enum Type type) {
         mxdata.name = decode_name((char*)(data + 2));
         return mxdata.name;
     }
+
+    return NULL;
 }
 
 void handle_rerror(uint8_t code){

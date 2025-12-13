@@ -15,7 +15,7 @@ int main(int argc, char *argv[]){
 
     UserQuery user_query = parse_user_query(argc, argv);
     if (user_query.type == UNKNOWN) {
-        fprintf(stderr, "Unknown type: %s", argv[1]);
+        fprintf(stderr, "Unknown type: %s\n", argv[1]);
         exit(EXIT_FAILURE);
     }
 
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
     UserResponse *user_responses = build_user_responses(response_packet.answers, response_packet.header.an_count);
     
     for (int i = 0; i < response_packet.header.an_count; i++) {
-        printf("--> %s\n", user_responses[i].answer);
+        printf("--> %s\n", (char *)user_responses[i].answer);
     }
     
     free_user_responses(user_responses, response_packet.header.an_count);
