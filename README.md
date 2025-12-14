@@ -1,6 +1,6 @@
 # LiteResolve
 
-#### Video Demo:  https://youtube.com (replace with video link)
+#### Video Demo: https://youtu.be/uYXH20a-_s8?si=ssJLwW669IVyp1Z8
 
 #### Description:
 
